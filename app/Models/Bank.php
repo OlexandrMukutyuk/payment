@@ -23,10 +23,10 @@ class Bank extends Model implements HasMedia
         $query->where('active', true);
     }
 
-    // public function cards()
-    // {
-    //     return $this->hasMany(Card::class);
-    // }
+    public function cards()
+    {
+        return $this->hasMany(Card::class);
+    }
 
     public function registerMediaConversions(?Media $media = null): void
 {

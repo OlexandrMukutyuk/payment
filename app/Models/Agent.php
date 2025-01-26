@@ -24,8 +24,8 @@ class Agent extends Model
         $query->where('active', true);
     }
 
-    // public function cards()
-    // {
-    //     return $this->hasMany(Card::class);
-    // }
+    public function cards()
+    {
+        return $this->hasMany(Card::class);
+    }
 }

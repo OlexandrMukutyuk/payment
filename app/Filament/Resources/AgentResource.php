@@ -33,11 +33,11 @@ class AgentResource extends Resource
 
     public static function form(Form $form): Form
     {
-        
+
         return $form
             ->schema([
                 TextInput::make('group_id')
-                    ->label('ID Чату')
+                    ->label('ID Групи')
                     ->required()
                     ->readOnly(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord)
                     ->maxLength(100),

@@ -25,6 +25,7 @@ class AgentResource extends JsonResource
             'active' => $this->active,
             'schedule' => $this->schedule,
             'inn' => $this->inn,
+            'cards' => CardResource::collection($this->cards),
         ];
     }
 }

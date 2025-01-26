@@ -14,6 +14,17 @@ class CardResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return [
+            'id' => intval($this->id),
+            'bank_id' => intval($this->bank_id),
+            'agent_id' => intval($this->agent_id),
+            'limit' => floatval($this->limit),
+            'status' => $this->status,
+            'iban' => $this->iban,
+            'date_end' => $this->date_end,
+            'number' => $this->number,
+            'active' => $this->active,
+            'file' => $this->getFirstMediaUrl('files'),
+        ];
     }
 }
