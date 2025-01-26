@@ -5,7 +5,15 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\AgentResource\Pages;
 use App\Filament\Resources\AgentResource\RelationManagers;
 use App\Models\Agent;
+use App\Models\Bank;
+use App\Models\Card;
 use Filament\Forms;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
+use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Tabs\Tab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -33,56 +41,130 @@ class AgentResource extends Resource
 
     public static function form(Form $form): Form
     {
-
+        // dd($form->model->cards);
         return $form
             ->schema([
-                TextInput::make('group_id')
-                    ->label('ID Групи')
-                    ->required()
-                    ->readOnly(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord)
-                    ->maxLength(100),
+                Tabs::make('Tabs')
+                ->columnSpanFull()
+                ->tabs([
+                    Tab::make('Агент')
+                        ->schema([
+                            TextInput::make('group_id')
+                                ->label('ID Групи')
+                                ->required()
+                                ->readOnly(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord)
+                                ->maxLength(100),
 
-                TextInput::make('chat_id')
-                    ->label('ID Чату')
-                    ->required()
-                    ->readOnly(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord)
-                    ->maxLength(100),
+                            TextInput::make('chat_id')
+                                ->label('ID Чату')
+                                ->required()
+                                ->readOnly(fn ($livewire) => $livewire instanceof \Filament\Resources\Pages\CreateRecord)
+                                ->maxLength(100),
 
-                TextInput::make('chat_name')
-                    ->label('Назва чату')
-                    ->maxLength(255),
+                            TextInput::make('chat_name')
+                                ->label('Назва чату')
+                                ->maxLength(255),
 
-                TextInput::make('phone')
-                    ->label('Телефон')
-                    ->tel()
-                    ->required()
-                    ->maxLength(40),
+                            TextInput::make('phone')
+                                ->label('Телефон')
+                                ->tel()
+                                ->required()
+                                ->maxLength(40),
 
-                TextInput::make('name')
-                    ->label('ПІБ')
-                    ->required()
-                    ->maxLength(255),
+                            TextInput::make('name')
+                                ->label('ПІБ')
+                                ->required()
+                                ->maxLength(255),
 
-                TextInput::make('inn')
-                    ->label('ІПН')
-                    ->hint('Індивідуальний податковий номер')
-                    ->required()
-                    ->maxLength(255),
+                            TextInput::make('inn')
+                                ->label('ІПН')
+                                ->hint('Індивідуальний податковий номер')
+                                ->required()
+                                ->maxLength(255),
 
-                TextInput::make('schedule')
-                    ->label('Графік роботи')
-                    ->maxLength(255),
+                            TextInput::make('schedule')
+                                ->label('Графік роботи')
+                                ->maxLength(255),
 
-                Toggle::make('is_one_day')
-                    ->columnSpanFull()
-                    ->label('Агент одноденка')
-                    ->required(),
+                            Toggle::make('is_one_day')
+                                ->columnSpanFull()
+                                ->label('Агент одноденка')
+                                ->required(),
 
-                Toggle::make('active')
-                    ->label('Активний')
-                    ->columnSpanFull()
-                    ->required(),
-            ]);
+                            Toggle::make('active')
+                                ->label('Активний')
+                                ->columnSpanFull()
+                                ->required(),
+                        ])->columns(2),
+                    Tab::make('Картки')
+                        ->schema([
+                            Repeater::make('cards')
+                                ->relationship('cards')
+                                ->label('')
+                                ->schema([
+                                    Select::make('bank_id')
+                                        ->label('Банк')
+                                        ->searchable()
+                                        ->options(Bank::active()->pluck('name', 'id'))
+                                        ->required(),
+
+                                    Select::make('status')
+                                        ->label('Статус карти')
+                                        ->searchable()
+                                        ->options(Card::getStatuses())
+                                        ->required(),
+
+                                    TextInput::make('limit')
+                                        ->label('Ліміт')
+                                        ->maxLength(255)
+                                        ->suffix('UAH')
+                                        ->required(),
+
+                                    TextInput::make('date_end')
+                                        ->label('Дата завершення')
+                                        ->maxLength(10)
+                                        ->suffix('ММ/РР')
+                                        ->required(),
+
+                                    TextInput::make('iban')
+                                        ->label('IBAN')
+                                        ->maxLength(255)
+                                        ->required()
+                                        ->columnSpan(2),
+
+                                    TextInput::make('number')
+                                        ->label('Номер')
+                                        ->maxLength(50)
+                                        ->required(),
+
+                                    SpatieMediaLibraryFileUpload::make('files')
+                                        ->label('Виписка')
+                                        ->collection('files')
+                                        ->disk('cards')
+                                        ->openable()
+                                        ->previewable(false)
+                                        ->downloadable(),
+
+
+                                    DateTimePicker::make('created_at')
+                                        ->label('Дата додавання карти')
+                                        ->readOnly(),
+
+                                    DateTimePicker::make('updated_at')
+                                        ->label('Останнє редагування карти')
+                                        ->readOnly(),
+
+                                    Toggle::make('active')
+                                        ->label('Активна')
+                                        ->required()
+                                        ->columnSpanFull(),
+
+                                ])
+                                ->columns(4)
+                                ->addable(false)
+                        ]),
+                    ])
+                ]);
     }
 
     public static function table(Table $table): Table

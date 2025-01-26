@@ -45,7 +45,6 @@ class AgentController extends Controller
         ]);
         $card = Arr::except($request->validated(), ['group_id', 'chat_id', 'file']);
         $card['limit'] = Settings::firstWhere('key', 'limit')->value;
-        $card['status'] = 'new';
         $card = $agent->cards()->create($card);
         $card->addMedia($request->file)
             ->toMediaCollection('files', 'cards');

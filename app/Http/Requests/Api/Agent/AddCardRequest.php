@@ -27,6 +27,7 @@ class AddCardRequest extends FormRequest
             'group_id' => ['required', 'exists:agents,group_id',],
             'chat_id' => ['required', 'exists:agents,chat_id'],
             'bank_id' => ['required', 'exists:banks,id'],
+            'status' => ['required', 'in:fiz,fop'],
             'iban' => ['required', new Iban],
             'date_end' => [
                 'required',

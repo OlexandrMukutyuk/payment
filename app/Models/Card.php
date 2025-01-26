@@ -22,6 +22,14 @@ class Card extends Model implements HasMedia
         'active',
     ];
 
+    public static function getStatuses()
+    {
+        return [
+            'fop' => __('fop'),
+            'fiz' => __('fiz'),
+        ];
+    }
+
     public function scopeActive(Builder $query): void
     {
         $query->where('active', true);
