@@ -114,6 +114,8 @@ class OutgoingPaymentController extends Controller
             'incoming_sum' => $request->incoming_sum,
         ]);
 
+        $outgoingPayment->addMedia($request->file('file'))->toMediaCollection('outgoing_payment_files');
+
         $active_card->update([
             'limit' => $active_card->limit - $request->incoming_sum,
         ]);

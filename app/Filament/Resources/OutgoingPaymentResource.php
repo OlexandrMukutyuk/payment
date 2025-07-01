@@ -122,6 +122,9 @@ class OutgoingPaymentResource extends Resource
                                     ->label('Файли')
                                     ->collection('outgoing_payment_files')
                                     ->disk('outgoing_payment_files')
+                                    ->openable()
+                                    ->previewable(false)
+                                    ->downloadable(),
                             ])
                             ->columns(2),
                         ])->columnSpanFull()

@@ -26,6 +26,7 @@ class CreateRequest extends FormRequest
         return [
             'fee' => ['required', 'integer', 'min:0'],
             'incoming_sum' => ['required', 'integer', 'min:0'],
+            'file' => ['required', 'file', 'max:10000']
         ];
     }
 }
