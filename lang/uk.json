@@ -105,6 +105,8 @@
     "saturday": "Субота",
     "sunday": "Неділя",
     "admin_exchanger": "Адміністратор компанії",
+    "in_process": "В обробці",
+    "failed": "Скасовано",
     "passwords.throttled": "Посилання вже було надіслано"
 
 }

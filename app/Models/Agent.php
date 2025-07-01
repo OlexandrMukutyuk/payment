@@ -19,6 +19,11 @@ class Agent extends Model
         'inn',
     ];
 
+    public function getActiveCardAttribute()
+    {
+        return $this->cards()->where('active', true)->first();
+    }
+
     public function scopeActive(Builder $query): void
     {
         $query->where('active', true);
@@ -27,5 +32,10 @@ class Agent extends Model
     public function cards()
     {
         return $this->hasMany(Card::class);
+    }
+
+    public function agents()
+    {
+        return $this->hasMany(OutgoingPayment::class);
     }
 }

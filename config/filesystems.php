@@ -61,6 +61,14 @@ return [
             'throw' => false,
         ],
 
+        'outgoing_payment_files' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/outgoing_payment_files'),
+            'url' => env('APP_URL').'/storage/outgoing_payment_files',
+            'visibility' => 'public',
+            'throw' => false,
+        ],
+
         's3' => [
             'driver' => 's3',
             'key' => env('AWS_ACCESS_KEY_ID'),

@@ -50,7 +50,7 @@ class BankResource extends Resource
                     ->label('Зображення')
                     ->image()
                     ->disk('banks')
-                    ->conversion('preview')
+                    ->conversion('preview'),
 
             ]);
     }
