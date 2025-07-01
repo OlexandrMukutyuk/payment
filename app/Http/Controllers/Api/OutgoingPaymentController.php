@@ -20,7 +20,7 @@ class OutgoingPaymentController extends Controller
         $outgoingPayments = OutgoingPayment::onlyNew()->where('sum', '<', $active_card->limit)->get();
 
         return response()->json([
-                'OutgoingPayment' => OutgoingPaymentResource::collection($outgoingPayments),
+                'outgoingPayment' => OutgoingPaymentResource::collection($outgoingPayments),
                 'result' => true,
         ]);
     }
@@ -46,8 +46,7 @@ class OutgoingPaymentController extends Controller
             'status' => 'in_process',
             'chat_id' => $agent->chat_id,
             'group_id' => $agent->group_id,
-            'agent_id'
-            => $agent->id,
+            'agent_id' => $agent->id,
         ]);
 
         $active_card->update([
@@ -55,7 +54,7 @@ class OutgoingPaymentController extends Controller
         ]);
 
         return response()->json([
-            'OutgoingPayment' => OutgoingPaymentResource::make($outgoingPayment->fresh()),
+            'outgoingPayment' => OutgoingPaymentResource::make($outgoingPayment->fresh()),
             'result' => true,
         ]);
     }
@@ -81,7 +80,7 @@ class OutgoingPaymentController extends Controller
         ]);
 
         return response()->json([
-            'OutgoingPayment' => OutgoingPaymentResource::make($outgoingPayment->fresh()),
+            'outgoingPayment' => OutgoingPaymentResource::make($outgoingPayment->fresh()),
             'result' => true,
         ]);
     }
@@ -121,7 +120,7 @@ class OutgoingPaymentController extends Controller
         ]);
 
         return response()->json([
-            'OutgoingPayment' => OutgoingPaymentResource::make($outgoingPayment->fresh()),
+            'outgoingPayment' => OutgoingPaymentResource::make($outgoingPayment->fresh()),
             'result' => true,
         ]);
     }

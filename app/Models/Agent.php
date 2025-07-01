@@ -34,8 +34,13 @@ class Agent extends Model
         return $this->hasMany(Card::class);
     }
 
-    public function agents()
+    public function outgoingPayments()
     {
         return $this->hasMany(OutgoingPayment::class);
+    }
+
+    public function incomingPayments()
+    {
+        return $this->hasMany(IncomingPayment::class);
     }
 }
