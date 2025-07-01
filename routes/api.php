@@ -20,6 +20,8 @@ Route::post('/agent/add-card', [AgentController::class, 'addCard'])->name('agent
 // Route::post('/outgoing-payment', [OutgoingPaymentController::class, 'show'])->name('agent.create');
 
 Route::get('/agent/{agent}/outgoing-payments', [OutgoingPaymentController::class, 'index'])->name('outgoingPayment.index');
+Route::get('/agent/{agent}/outgoing-payments/{outgoingPayment}/take', [OutgoingPaymentController::class, 'take'])->name('outgoingPayment.take');
+Route::get('/agent/{agent}/outgoing-payments/{outgoingPayment}/cancel', [OutgoingPaymentController::class, 'cancel'])->name('outgoingPayment.cancel');
 Route::post('/agent/{agent}/outgoing-payments/{outgoingPayment}/update', [OutgoingPaymentController::class, 'update'])->name('outgoingPayment.update');
 
 // Route::post('/outgoing-payment/add-card', [OutgoingPaymentController::class, 'addCard'])->name('agent.add-card');

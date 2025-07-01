@@ -25,9 +25,53 @@ class OutgoingPaymentController extends Controller
         ]);
     }
 
+    public function take(Agent $agent, OutgoingPayment $outgoingPayment)
+    {
+        $active_card = $agent->active_card;
+
+        if(!$active_card)
+        {
+            abort(404, 'Card not found.');
+        }
+
+        if($active_card->limit < $outgoingPayment->sum){
+            abort(401, 'You have exceeded your limit.');
+        }
+
+        $outgoingPayment->update([
+            'status' => 'in_process',
+            'chat_id' => $agent->chat_id,
+            'group_id' => $agent->group_id,
+            'agent_id' => $agent->id,
+        ]);
+
+        return response()->json([
+            'OutgoingPayment' => OutgoingPaymentResource::make($outgoingPayment->fresh()),
+            'result' => true,
+        ]);
+    }
+
+    public function cancel(Agent $agent, OutgoingPayment $outgoingPayment)
+    {
+        $outgoingPayment->update([
+            'status' => 'new',
+            'chat_id' => null,
+            'group_id' => null,
+            'agent_id' => null,
+        ]);
+
+        return response()->json([
+            'OutgoingPayment' => OutgoingPaymentResource::make($outgoingPayment->fresh()),
+            'result' => true,
+        ]);
+    }
+
     public function update(Agent $agent, OutgoingPayment $outgoingPayment, CreateRequest $request)
     {
-        if($outgoingPayment->status != 'new')
+        if($outgoingPayment->status != 'in_process' ||
+        $outgoingPayment->chat_id != $agent->chat_id ||
+        $outgoingPayment->group_id != $agent->group_id ||
+        $outgoingPayment->agent_id != $agent->id)
         {
             abort(401, 'The request is already being processed by someone else.');
         }
@@ -44,18 +88,10 @@ class OutgoingPaymentController extends Controller
         }
 
         $outgoingPayment->update([
-            'chat_id' => $agent->chat_id,
-            'group_id' => $agent->group_id,
-            'agent_id' => $agent->id,
             'bank' => $active_card->bank->name,
             'card' => $active_card->number,
             'fee' => $request->fee,
             'incoming_sum' => $request->incoming_sum,
-
-        ]);
-
-        $outgoingPayment->update([
-            'status' => 'in_process'
         ]);
 
         $active_card->update([
@@ -63,9 +99,9 @@ class OutgoingPaymentController extends Controller
         ]);
 
         return response()->json([
-            'data' => [
-                'OutgoingPayment' => OutgoingPaymentResource::make($outgoingPayment->fresh()),
-                'result' => true,
-        ]]);
+            'OutgoingPayment' => OutgoingPaymentResource::make($outgoingPayment->fresh()),
+            'result' => true,
+        ]);
     }
+
 }
