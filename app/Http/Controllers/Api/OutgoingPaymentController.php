@@ -29,6 +29,10 @@ class OutgoingPaymentController extends Controller
     {
         $active_card = $agent->active_card;
 
+        if($outgoingPayment->status == 'in_process'){
+            abort(401, 'The request is already taken.');
+        }
+
         if(!$active_card)
         {
             abort(404, 'Card not found.');
@@ -42,7 +46,12 @@ class OutgoingPaymentController extends Controller
             'status' => 'in_process',
             'chat_id' => $agent->chat_id,
             'group_id' => $agent->group_id,
-            'agent_id' => $agent->id,
+            'agent_id'
+            => $agent->id,
+        ]);
+
+        $active_card->update([
+            'limit' => $active_card->limit - $outgoingPayment->sum,
         ]);
 
         return response()->json([
@@ -53,11 +62,22 @@ class OutgoingPaymentController extends Controller
 
     public function cancel(Agent $agent, OutgoingPayment $outgoingPayment)
     {
+        if($outgoingPayment->status != 'in_process' ||
+        $outgoingPayment->agent_id != $agent->id ||
+        $outgoingPayment->group_id != $agent->group_id){
+            abort(401, 'Its not your payment');
+        }
+        $active_card = $agent->active_card;
+
         $outgoingPayment->update([
             'status' => 'new',
             'chat_id' => null,
             'group_id' => null,
             'agent_id' => null,
+        ]);
+
+        $active_card->update([
+            'limit' => $active_card->limit + $outgoingPayment->sum,
         ]);
 
         return response()->json([
