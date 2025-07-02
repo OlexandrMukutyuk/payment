@@ -99,7 +99,6 @@ class OutgoingPaymentResource extends Resource
 
                                 TextInput::make('card')
                                     ->readOnly()
-                                    ->required()
                                     ->rule('creditcard')
                                     // ->mask('9999 9999 9999 9999')
                                     ->label('Номер карти'),
