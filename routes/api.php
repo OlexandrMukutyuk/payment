@@ -16,6 +16,7 @@ Route::get('/banks', [BankController::class, 'index'])->name('banks');
 
 Route::post('/agent', [AgentController::class, 'show'])->name('agent.show');
 Route::post('/agent/create', [AgentController::class, 'create'])->name('agent.create');
+Route::get('/agent/{agent}/active/change', [AgentController::class, 'agentActiveChange'])->name('agent.active.change');
 Route::post('/agent/add-card', [AgentController::class, 'addCard'])->name('agent.add-card');
 
 // Route::post('/outgoing-payment', [OutgoingPaymentController::class, 'show'])->name('agent.create');

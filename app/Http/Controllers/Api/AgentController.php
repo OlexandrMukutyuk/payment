@@ -57,4 +57,17 @@ class AgentController extends Controller
         ]]);
     }
 
+    public function agentActiveChange(Agent $agent)
+    {
+        $agent->update([
+            'active' => !$agent->active,
+        ]);
+
+        return response()->json([
+            'data' => [
+                'banks' => AgentResource::make($agent->fresh()),
+                'result' => true,
+        ]]);
+    }
+
 }
