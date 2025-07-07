@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Http\Resources\Api\OutgoingPaymentResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Support\Facades\Http;
 
 class OutgoingPayment extends Model implements HasMedia
 {
@@ -36,6 +38,46 @@ class OutgoingPayment extends Model implements HasMedia
             'success' => __('success'),
             'failed' => __('failed'),
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::created(function (self $payment) {
+            Http::post(env('BOT_URL') . '/api/payment/outgoing', [
+                'outgoingPayment' => OutgoingPaymentResource::make($payment),
+                'result' => true,
+                'group_ids' => Agent::active()->whereHas('cards', function ($query) {
+                    $query->where('active', true)
+                          ->whereColumn('limit', '>', 'amount');
+                })->pluck('group_id')->unique()->values()->toArray(),
+            ]);
+        });
+        static::saved(function (self $payment) {
+            if (
+                $payment->status === 'new' &&
+                $payment->wasChanged('status')
+            ) {
+                Http::post(env('BOT_URL') . '/api/payment/outgoing', [
+                    'outgoingPayment' => OutgoingPaymentResource::make($payment),
+                    'result' => true,
+                    'group_ids' => Agent::active()->whereHas('cards', function ($query) {
+                        $query->where('active', true)
+                              ->whereColumn('limit', '>', 'amount');
+                    })->pluck('group_id')->unique()->values()->toArray(),
+                ]);
+            }
+
+            if (
+                $payment->status === 'success' || $payment->status === 'failed' &&
+                $payment->wasChanged('status')
+            ){
+                Http::post(env('BOT_URL') . '/api/payment/outgoing/feedback', [
+                    'outgoingPayment' => OutgoingPaymentResource::make($payment),
+                    'result' => true,
+                ]);
+            }
+
+        });
     }
 
     public function agent()

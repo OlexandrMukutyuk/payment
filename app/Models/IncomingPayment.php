@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Http\Resources\Api\IncomingPaymentResource;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
 
 class IncomingPayment extends Model
 {
@@ -31,6 +33,45 @@ class IncomingPayment extends Model
             'success' => __('success'),
             'failed' => __('failed'),
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::created(function (self $payment) {
+            Http::post(env('BOT_URL') . '/api/payment/incoming', [
+                'incomingPayment' => IncomingPaymentResource::make($payment),
+                'result' => true,
+                'group_ids' => Agent::active()->whereHas('cards', function ($query) {
+                    $query->where('active', true)
+                          ->whereColumn('limit', '>', 'amount');
+                })->pluck('group_id')->unique()->values()->toArray(),
+            ]);
+        });
+        static::saved(function (self $payment) {
+            if (
+                $payment->status === 'new' &&
+                $payment->wasChanged('status')
+            ) {
+                Http::post(env('BOT_URL') . '/api/payment/incoming', [
+                    'incomingPayment' => IncomingPaymentResource::make($payment),
+                    'result' => true,
+                    'group_ids' => Agent::active()->whereHas('cards', function ($query) {
+                        $query->where('active', true);
+                    })->pluck('group_id')->unique()->values()->toArray(),
+                ]);
+            }
+
+            if (
+                $payment->status === 'success' || $payment->status === 'failed' &&
+                $payment->wasChanged('status')
+            ){
+                Http::post(env('BOT_URL') . '/api/payment/incoming/feedback', [
+                    'incomingPayment' => IncomingPaymentResource::make($payment),
+                    'result' => true,
+                ]);
+            }
+
+        });
     }
 
     public function agent()

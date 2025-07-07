@@ -24,6 +24,7 @@ class IncomingPaymentResource extends JsonResource
             'sender_card' => $this->sender_card,
             'sum' => $this->sum,
             'status' => $this->status,
+            'status_translation' => __($this->status),
             'recipient_name' => $this->recipient_name,
             'recipient_bank' => $this->recipient_bank,
             'recipient_card' => $this->recipient_card,
