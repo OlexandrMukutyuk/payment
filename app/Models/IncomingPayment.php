@@ -39,7 +39,7 @@ class IncomingPayment extends Model
     {
         static::created(function (self $payment) {
             Http::post(env('BOT_URL') . '/api/payment/incoming', [
-                'incomingPayment' => IncomingPaymentResource::make($payment),
+                IncomingPaymentResource::make($payment),
                 // 'result' => true,
                 // 'group_ids' => Agent::active()->whereHas('cards', function ($query) {
                 //     $query->where('active', true)
@@ -53,7 +53,7 @@ class IncomingPayment extends Model
                 $payment->wasChanged('status')
             ) {
                 Http::post(env('BOT_URL') . '/api/payment/incoming', [
-                    'incomingPayment' => IncomingPaymentResource::make($payment),
+                    IncomingPaymentResource::make($payment),
                     // 'result' => true,
                     // 'group_ids' => Agent::active()->whereHas('cards', function ($query) {
                     //     $query->where('active', true);
