@@ -46,9 +46,9 @@ class OutgoingPayment extends Model implements HasMedia
             Http::post(env('BOT_URL') . '/api/payment/outgoing', [
                 'outgoingPayment' => OutgoingPaymentResource::make($payment),
                 'result' => true,
-                'group_ids' => Agent::active()->whereHas('cards', function ($query) {
+                'group_ids' => Agent::active()->whereHas('cards', function ($query) use ($payment) {
                     $query->where('active', true)
-                          ->whereColumn('limit', '>', 'amount');
+                          ->where('limit', '>', $payment->sum);
                 })->pluck('group_id')->unique()->values()->toArray(),
             ]);
         });
@@ -60,9 +60,9 @@ class OutgoingPayment extends Model implements HasMedia
                 Http::post(env('BOT_URL') . '/api/payment/outgoing', [
                     'outgoingPayment' => OutgoingPaymentResource::make($payment),
                     'result' => true,
-                    'group_ids' => Agent::active()->whereHas('cards', function ($query) {
+                    'group_ids' => Agent::active()->whereHas('cards', function ($query) use ($payment) {
                         $query->where('active', true)
-                              ->whereColumn('limit', '>', 'amount');
+                              ->where('limit', '>', $payment->sum);
                     })->pluck('group_id')->unique()->values()->toArray(),
                 ]);
             }

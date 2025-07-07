@@ -15,6 +15,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\SelectColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -112,7 +114,31 @@ class IncomingPaymentResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('agent.name')
+                    ->label('Агент')
+                    ->numeric()
+                    ->sortable(),
+
+                TextColumn::make('recipient_bank')
+                    ->label('Банк'),
+
+                TextColumn::make('sum')
+                    ->label('Сума'),
+
+                SelectColumn::make('status')
+                    ->label('Статус')
+                    ->options(IncomingPayment::getStatuses())
+                    ->extraAttributes(['style' => 'width: 120px; min-width: 120px; max-width: 120px']),
+
+                TextColumn::make('created_at')
+                    ->label('Дата створення')
+                    ->dateTime()
+                    ->sortable(),
+                TextColumn::make('updated_at')
+                    ->label('Дата редагування')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //
