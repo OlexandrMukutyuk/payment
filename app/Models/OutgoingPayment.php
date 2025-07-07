@@ -44,12 +44,7 @@ class OutgoingPayment extends Model implements HasMedia
     {
         static::created(function (self $payment) {
             Http::post(env('BOT_URL') . '/api/payment/outgoing', [
-                'outgoingPayment' => OutgoingPaymentResource::make($payment),
-                'result' => true,
-                'group_ids' => Agent::active()->whereHas('cards', function ($query) use ($payment) {
-                    $query->where('active', true)
-                          ->where('limit', '>', $payment->sum);
-                })->pluck('group_id')->unique()->values()->toArray(),
+                OutgoingPaymentResource::make($payment),
             ]);
         });
         static::saved(function (self $payment) {
@@ -58,12 +53,12 @@ class OutgoingPayment extends Model implements HasMedia
                 $payment->wasChanged('status')
             ) {
                 Http::post(env('BOT_URL') . '/api/payment/outgoing', [
-                    'outgoingPayment' => OutgoingPaymentResource::make($payment),
-                    'result' => true,
-                    'group_ids' => Agent::active()->whereHas('cards', function ($query) use ($payment) {
-                        $query->where('active', true)
-                              ->where('limit', '>', $payment->sum);
-                    })->pluck('group_id')->unique()->values()->toArray(),
+                    OutgoingPaymentResource::make($payment),
+                    // 'result' => true,
+                    // 'group_ids' => Agent::active()->whereHas('cards', function ($query) use ($payment) {
+                    //     $query->where('active', true)
+                    //           ->where('limit', '>', $payment->sum);
+                    // })->pluck('group_id')->unique()->values()->toArray(),
                 ]);
             }
 
@@ -72,8 +67,7 @@ class OutgoingPayment extends Model implements HasMedia
                 $payment->wasChanged('status')
             ){
                 Http::post(env('BOT_URL') . '/api/payment/outgoing/feedback', [
-                    'outgoingPayment' => OutgoingPaymentResource::make($payment),
-                    'result' => true,
+                    OutgoingPaymentResource::make($payment),
                 ]);
             }
 

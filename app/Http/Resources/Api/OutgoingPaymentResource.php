@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Api;
 
+use App\Models\Agent;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -30,7 +31,10 @@ class OutgoingPaymentResource extends JsonResource
             'recipient_card' => $this->recipient_card,
             'recipient_iban' => $this->recipient_iban,
             'sum' => $this->sum,
-
+            'group_ids' => Agent::active()->whereHas('cards', function ($query) {
+                $query->where('active', true)
+                      ->where('limit', '>', $this->sum);
+            })->pluck('group_id')->unique()->values()->toArray(),
         ];
     }
 }

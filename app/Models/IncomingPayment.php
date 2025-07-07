@@ -40,11 +40,11 @@ class IncomingPayment extends Model
         static::created(function (self $payment) {
             Http::post(env('BOT_URL') . '/api/payment/incoming', [
                 'incomingPayment' => IncomingPaymentResource::make($payment),
-                'result' => true,
-                'group_ids' => Agent::active()->whereHas('cards', function ($query) {
-                    $query->where('active', true)
-                          ->whereColumn('limit', '>', 'amount');
-                })->pluck('group_id')->unique()->values()->toArray(),
+                // 'result' => true,
+                // 'group_ids' => Agent::active()->whereHas('cards', function ($query) {
+                //     $query->where('active', true)
+                //           ->whereColumn('limit', '>', 'amount');
+                // })->pluck('group_id')->unique()->values()->toArray(),
             ]);
         });
         static::saved(function (self $payment) {
@@ -54,10 +54,10 @@ class IncomingPayment extends Model
             ) {
                 Http::post(env('BOT_URL') . '/api/payment/incoming', [
                     'incomingPayment' => IncomingPaymentResource::make($payment),
-                    'result' => true,
-                    'group_ids' => Agent::active()->whereHas('cards', function ($query) {
-                        $query->where('active', true);
-                    })->pluck('group_id')->unique()->values()->toArray(),
+                    // 'result' => true,
+                    // 'group_ids' => Agent::active()->whereHas('cards', function ($query) {
+                    //     $query->where('active', true);
+                    // })->pluck('group_id')->unique()->values()->toArray(),
                 ]);
             }
 
@@ -67,7 +67,7 @@ class IncomingPayment extends Model
             ){
                 Http::post(env('BOT_URL') . '/api/payment/incoming/feedback', [
                     'incomingPayment' => IncomingPaymentResource::make($payment),
-                    'result' => true,
+                    // 'result' => true,
                 ]);
             }
 
