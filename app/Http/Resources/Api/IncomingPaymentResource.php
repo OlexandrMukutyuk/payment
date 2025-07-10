@@ -33,7 +33,10 @@ class IncomingPaymentResource extends JsonResource
             'incoming_sum' => $this->incoming_sum,
             'group_ids' => Agent::active()->whereHas('cards', function ($query) {
                 $query->where('active', true);
-            })->pluck('group_id')->unique()->values()->toArray()
+            })->pluck('group_id')->unique()->values()->toArray(),
+            'agent' => Agent::active()->whereHas('cards', function ($query) {
+                $query->where('active', true);
+            })->pluck('chat_id')->unique()->values()->toArray()
         ];
     }
 }
