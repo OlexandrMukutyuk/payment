@@ -36,7 +36,7 @@ class IncomingPaymentResource extends JsonResource
             })->pluck('group_id')->unique()->values()->toArray(),
             'agent' => Agent::active()->whereHas('cards', function ($query) {
                 $query->where('active', true);
-            })->pluck('chat_id')->unique()->values()->toArray()
+            })->select('chat_id', 'group_id')->get()->toArray()
         ];
     }
 }
