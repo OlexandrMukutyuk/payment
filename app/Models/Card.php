@@ -22,6 +22,19 @@ class Card extends Model implements HasMedia
         'active',
     ];
 
+    protected static function booted()
+    {
+        static::creating(function (Card $card) {
+            $card->active = true;
+        });
+
+        static::created(function (Card $card) {
+            Card::where('agent_id', $card->agent_id)
+                ->where('id', '!=', $card->id)
+                ->update(['active' => false]);
+        });
+    }
+
     public static function getStatuses()
     {
         return [
